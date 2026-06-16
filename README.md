@@ -1,88 +1,151 @@
-# 🚀 Desafio Fullstack – Processo Seletivo
+# Jornada 0 – Compras (Matrícula de Cursos)
 
-Bem-vindo(a)! Este é o repositório base para o **Desafio Fullstack** da nossa etapa de seleção de novos colaboradores.
+Aplicação fullstack onde o usuário visualiza ofertas de cursos, escolhe a
+modalidade e a forma de parcelamento e realiza a matrícula informando seus
+dados pessoais.
 
----
+> O enunciado original do desafio está em [`DESAFIO.md`](./DESAFIO.md).
 
-## 🎯 Objetivo
+## ✨ Stack
 
-Construir uma aplicação **fullstack** onde usuários podem visualizar ofertas de cursos, selecionar um curso e realizar a matrícula.
+| Camada | Tecnologias |
+|--------|-------------|
+| **Backend** | NestJS, TypeScript, TypeORM, PostgreSQL, class-validator, Swagger, Pino (logs) |
+| **Frontend** | React, TypeScript, Vite, Tailwind CSS, Radix UI (padrão shadcn/ui), Context API |
+| **Testes** | Jest + Supertest (back), Vitest + React Testing Library (front) |
+| **Infra** | Docker (PostgreSQL), migrations com TypeORM |
 
-O **handoff de design** está disponível no Figma:  
-🔗 [Acessar Figma](https://www.figma.com/design/jJLBqZG5RLoL9pbviYvAZW/Teste---Desenvolvimento?node-id=8-2156&t=FjZv9T176fS24B4e-0)  
-🔑 **Senha:** `Teste-123`
+## 🗂️ Estrutura do monorepo
 
----
+```
+.
+├── backend/    # API NestJS (ofertas e matrículas)
+├── frontend/   # SPA React (jornada de matrícula)
+└── docker-compose.yml   # PostgreSQL
+```
 
-## 🛠️ Requisitos
+A arquitetura do backend é em **camadas** (`controller → service → repository`),
+o que manteve a regra de negócio isolada do ORM. O frontend organiza-se por
+**features** (`offers`, `enrollment`, `success`) com uma camada de `api`, `ui`
+(componentes) e o estado da jornada em **Context API**.
 
-### Backend (Node.js + TypeScript)
-- Framework: **NestJS**  
-- Banco de dados: **PostgreSQL ou MongoDB**  
-- Estrutura em camadas (**controllers, services, repositories**)  
-- Validações de entrada (ex.: email válido, campos obrigatórios)  
-- Documentação da API (**Swagger ou similar**)  
-- Testes automatizados (**unitários e integração**)  
+## 🧭 Funcionalidades da jornada
 
-### Frontend (React + TypeScript)
-- Framework: **React**  
-- Gerenciamento de estado: **Context API**  
-- Validações de formulário (email, telefone, etc.)  
-- Feedback ao usuário (**loading, erros, sucesso**)  
-- Design responsivo  
-- Testes com **React Testing Library**
-
-### Extras (opcional, diferencial)
-- Banco em **Docker** com migrations (**Prisma, TypeORM ou Sequelize**)  
-- Logs estruturados  
-- Uso de bibliotecas de UI como **shadcn/ui**, **Material UI (MUI)**, **Chakra UI** ou outras similares para acelerar o desenvolvimento do frontend
-  
----
-
-## ✅ Regras Importantes
-
-1. **Commits**: queremos acompanhar sua **evolução e raciocínio lógico**.  
-   - Faça **commits pequenos e frequentes**, mostrando sua linha de pensamento.  
-   - Não envie tudo em **um único commit final**.
-
-2. **Uso de IA**: você pode usar IA como **fonte de consulta**, mas **não é permitido** gerar **100% do projeto apenas com IA**. Queremos ver **seu raciocínio e implementação**.
+1. **Listagem de ofertas** por modalidade (Presencial / Digital (EAD)) e turno,
+   com preço promocional, parcelamento, **valor à vista** e **campus/endereço**.
+2. **Ofertas sem preço ("tapume")**: quando o valor não é divulgado, o card
+   convida o usuário a se inscrever e o fluxo segue **sem seleção de parcela**.
+3. **Escolha do parcelamento** em um modal ("Mais detalhes").
+4. **Matrícula** com dados pessoais validados (CPF, e-mail, telefone, data de
+   nascimento) e aceite de termos obrigatório; **ano de conclusão do ensino
+   médio é opcional**.
+5. **Confirmação** com número de protocolo.
 
 ---
 
-## 📊 Critérios de Avaliação
+## ✅ Pré-requisitos
 
-- **Qualidade do código** → clareza, boas práticas, clean code.  
-- **Arquitetura** → separação de responsabilidades, escalabilidade.  
-- **Validações e UX** → feedback claro ao usuário para erros e sucesso.  
-- **Testes** → cobertura e qualidade dos testes.  
-- **Documentação** → README explicando o setup.  
+- Node.js 20+ e Yarn (Classic)
+- Docker + Docker Compose (para o PostgreSQL)
+
+## 🚀 Como rodar
+
+### 1. Banco de dados
+
+```bash
+docker compose up -d db
+```
+
+> O `docker-compose.yml` expõe o Postgres na porta **5433** do host
+> (mapeada para a 5432 do container).
+
+### 2. Backend
+
+```bash
+cd backend
+cp .env.example .env          # ajuste a DATABASE_URL se necessário
+yarn install
+yarn migration:run            # cria as tabelas
+yarn db:seed                  # popula ofertas de exemplo
+yarn start:dev                # API em http://localhost:3000
+```
+
+- **Swagger:** http://localhost:3000/docs
+- **Endpoints:** `GET /offers`, `GET /offers/:id`, `POST /enrollments`, `GET /enrollments/:id`
+
+### 3. Frontend
+
+```bash
+cd frontend
+cp .env.example .env          # VITE_API_URL aponta para o backend
+yarn install
+yarn dev                      # app em http://localhost:5173
+```
 
 ---
 
-## ▶️ Como começar
+## 🧪 Testes
 
-1. Faça um **fork** deste repositório para a sua conta GitHub.  
-   - Clique no botão **Fork** no canto superior direito desta página.  
-   - Isso criará uma cópia do repositório no seu perfil.  
+```bash
+# Backend (unitários — não precisam de banco)
+cd backend && yarn test
 
-2. Clone o repositório que você acabou de forkear para a sua máquina local:  
-   ```bash
-   git clone https://github.com/<seu-usuario>/yduqs-portais-desafio-fullstack.git
-   ```
+# Backend (integração e2e — precisa do banco no ar + seed)
+yarn test:e2e
 
-3. Acesse a pasta do projeto:  
-   ```bash
-   cd yduqs-portais-desafio-fullstack
-   ```
-
-4. Configure e rode o **backend** e o **frontend** de acordo com os requisitos definidos.  
-
-5. Desenvolva sua solução fazendo **commits pequenos e frequentes**, para que possamos acompanhar sua linha de raciocínio e evolução.  
-
-6. Ao finalizar, envie o **link do seu fork** para avaliação.  
-   - Exemplo: `https://github.com/<seu-usuario>/yduqs-portais-desafio-fullstack`
+# Frontend
+cd frontend && yarn test
+```
 
 ---
 
-Boa sorte! 🚀  
-Estamos ansiosos para ver sua solução.
+## 🔎 Destaques de implementação
+
+- **Validações fortes** no backend (DTOs com `class-validator`): CPF com dígitos
+  verificadores, e-mail, telefone (DDD), data de nascimento no passado e aceite
+  de termos obrigatório. O frontend replica as regras para feedback imediato.
+- **Privacidade (LGPD):** o CPF é armazenado só com dígitos e **retornado
+  mascarado** pela API.
+- **Precisão monetária:** colunas `decimal` com um `ValueTransformer` que evita o
+  retorno como string do driver do Postgres.
+- **Logs estruturados** (Pino), incluindo um log de domínio na criação da
+  matrícula sem dados sensíveis.
+- **Feedback de UX:** estados de _loading_, _erro_ (com “tentar novamente”) e
+  _sucesso_ em toda a jornada; design responsivo (mobile e desktop).
+- **Testes com factories + Faker** (seed fixo) no backend e React Testing
+  Library cobrindo loading/erro e o fluxo de envio do formulário no frontend.
+
+## 🧱 Decisões técnicas
+
+- **TypeORM** (em vez de Prisma) pela integração nativa com o NestJS e por ser
+  uma das opções de migrations sugeridas no desafio.
+- **shadcn/ui (Radix + Tailwind)** para reproduzir a identidade visual do
+  handoff com controle total sobre o tema.
+- **`@faker-js/faker` fixado na v8** porque a v10 é ESM-only e quebra o
+  ts-jest (CommonJS).
+
+## 🔭 Próximos passos / evolução do modelo
+
+Pontos conscientemente deixados para uma evolução futura (mantidos simples pelo
+escopo do desafio):
+
+- **Normalizar `Campus` e `Course` como entidades próprias.** Hoje `campusName`,
+  `campusAddress` e `courseName` são colunas da `Offer`, o que **duplica** dados
+  quando várias ofertas compartilham o mesmo campus ou curso. O modelo de
+  produção seria:
+
+  ```
+  Course 1—N Offer N—1 Campus
+  ```
+
+  Com `Offer` referenciando `courseId` e `campusId` (FK), o endereço/contato do
+  campus ficam numa única fonte da verdade, com integridade garantida e
+  consultas naturais (ex.: "cursos disponíveis no campus X"). Foi mantido plano
+  por YAGNI, mas é a evolução natural da modelagem.
+- **Autenticação/autorização** para a área administrativa (CRUD de ofertas).
+- **Paginação e filtros** na listagem de ofertas (por modalidade, campus, etc.).
+- **Idempotência** na criação de matrícula (evitar duplicidade em reenvios).
+- **Estado da jornada no frontend** é mantido em memória (Context API), então um
+  _refresh_ reinicia o fluxo, e não há rota por etapa (sem deep-link nem botão
+  "voltar" do navegador). Foi uma escolha consciente pelo escopo; a evolução
+  natural é adotar `react-router` (uma rota por etapa) e/ou persistir o estado.
