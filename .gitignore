@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+coverage
+.env
+.env.local
+*.log
+.DS_Store
+
+# Prints do handoff (nao versionar)
+Captura de tela*.png
+2026-*.png

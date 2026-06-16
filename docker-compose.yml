@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: jornada_compras_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: yduqs
+      POSTGRES_PASSWORD: yduqs
+      POSTGRES_DB: jornada_compras
+    ports:
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U yduqs -d jornada_compras']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
