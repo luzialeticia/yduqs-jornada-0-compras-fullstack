@@ -23,6 +23,10 @@ export function toOfferDto(offer: Offer): OfferResponseDto {
     shift: offer.shift,
     originalPrice: offer.originalPrice,
     discountPrice: offer.discountPrice,
+    priceOnRequest: offer.priceOnRequest,
+    cashPrice: offer.cashPrice,
+    campusName: offer.campusName,
+    campusAddress: offer.campusAddress,
     installments: [...(offer.installments ?? [])]
       .sort((a, b) => a.count - b.count)
       .map(toInstallmentDto),

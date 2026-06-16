@@ -29,17 +29,37 @@ export class Offer {
     type: 'decimal',
     precision: 10,
     scale: 2,
+    nullable: true,
     transformer: new DecimalTransformer(),
   })
-  originalPrice: number;
+  originalPrice: number | null;
 
   @Column({
     type: 'decimal',
     precision: 10,
     scale: 2,
+    nullable: true,
     transformer: new DecimalTransformer(),
   })
-  discountPrice: number;
+  discountPrice: number | null;
+
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    transformer: new DecimalTransformer(),
+  })
+  cashPrice: number | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  campusName: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  campusAddress: string | null;
+
+  @Column({ default: false })
+  priceOnRequest: boolean;
 
   @Column({ default: true })
   active: boolean;
