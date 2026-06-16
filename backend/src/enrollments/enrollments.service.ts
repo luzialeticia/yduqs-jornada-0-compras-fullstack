@@ -26,25 +26,32 @@ export class EnrollmentsService {
       throw new NotFoundException('Oferta nao encontrada ou indisponivel');
     }
 
-    const installment =
-      await this.enrollmentsRepository.findInstallmentForOffer(
-        dto.installmentId,
-        dto.offerId,
-      );
-    if (!installment) {
-      throw new BadRequestException(
-        'Opcao de parcelamento invalida para a oferta selecionada',
-      );
+    const hasInstallments = offer.installments.length > 0;
+    if (hasInstallments && !dto.installmentId) {
+      throw new BadRequestException('Selecione uma opcao de parcelamento');
+    }
+    if (dto.installmentId) {
+      const installment =
+        await this.enrollmentsRepository.findInstallmentForOffer(
+          dto.installmentId,
+          dto.offerId,
+        );
+      if (!installment) {
+        throw new BadRequestException(
+          'Opcao de parcelamento invalida para a oferta selecionada',
+        );
+      }
     }
 
     const enrollment = await this.enrollmentsRepository.create({
       offerId: dto.offerId,
-      installmentId: dto.installmentId,
+      installmentId: dto.installmentId ?? null,
       fullName: dto.fullName,
       cpf: dto.cpf,
       birthDate: dto.birthDate,
       email: dto.email,
       phone: dto.phone,
+      highSchoolCompletionYear: dto.highSchoolCompletionYear ?? null,
       acceptedTerms: dto.acceptedTerms,
       acceptedWhatsapp: dto.acceptedWhatsapp ?? false,
     });

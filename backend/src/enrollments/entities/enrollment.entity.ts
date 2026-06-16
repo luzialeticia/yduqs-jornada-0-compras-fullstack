@@ -24,12 +24,14 @@ export class Enrollment {
   @Column()
   offerId: string;
 
-  @ManyToOne(() => Installment, (installment) => installment.enrollments)
+  @ManyToOne(() => Installment, (installment) => installment.enrollments, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'installmentId' })
-  installment: Installment;
+  installment: Installment | null;
 
-  @Column()
-  installmentId: string;
+  @Column({ type: 'uuid', nullable: true })
+  installmentId: string | null;
 
   @Column()
   fullName: string;
@@ -45,6 +47,9 @@ export class Enrollment {
 
   @Column()
   phone: string;
+
+  @Column({ type: 'int', nullable: true })
+  highSchoolCompletionYear: number | null;
 
   @Column({ type: 'boolean' })
   acceptedTerms: boolean;

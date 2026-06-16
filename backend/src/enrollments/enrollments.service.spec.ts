@@ -73,4 +73,31 @@ describe('EnrollmentsService', () => {
       BadRequestException,
     );
   });
+
+  it('exige parcela quando a oferta tem parcelamento', async () => {
+    const dto = makeCreateEnrollmentDto({ installmentId: undefined });
+    offersRepo.findById.mockResolvedValue(makeOffer({ id: dto.offerId }));
+
+    await expect(service.create(dto)).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+  });
+
+  it('cria matricula sem parcela em oferta tapume (sem preço)', async () => {
+    const dto = makeCreateEnrollmentDto({ installmentId: undefined });
+    offersRepo.findById.mockResolvedValue(
+      makeOffer({ id: dto.offerId, priceOnRequest: true, installments: [] }),
+    );
+    enrollmentsRepo.create.mockResolvedValue(
+      makeEnrollment({ installmentId: null }),
+    );
+
+    const result = await service.create(dto);
+
+    expect(enrollmentsRepo.findInstallmentForOffer).not.toHaveBeenCalled();
+    expect(enrollmentsRepo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ installmentId: null }),
+    );
+    expect(result.status).toBe('PENDING');
+  });
 });

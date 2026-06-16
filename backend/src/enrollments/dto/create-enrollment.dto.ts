@@ -5,12 +5,15 @@ import {
   IsBoolean,
   IsDate,
   IsEmail,
+  IsInt,
   IsOptional,
   IsString,
   IsUUID,
   Length,
   Matches,
+  Max,
   MaxDate,
+  Min,
 } from 'class-validator';
 import { IsCpf, onlyDigits } from '../../common/validators/cpf';
 
@@ -19,9 +22,14 @@ export class CreateEnrollmentDto {
   @IsUUID()
   offerId: string;
 
-  @ApiProperty({ description: 'Id da opcao de parcelamento escolhida' })
+  @ApiProperty({
+    required: false,
+    description:
+      'Id da parcela escolhida (obrigatorio se a oferta tiver parcelamento)',
+  })
+  @IsOptional()
   @IsUUID()
-  installmentId: string;
+  installmentId?: string;
 
   @ApiProperty({ example: 'Maria da Silva' })
   @IsString()
@@ -57,9 +65,21 @@ export class CreateEnrollmentDto {
   })
   phone: string;
 
-  @ApiProperty({ description: 'Aceite obrigatorio dos termos de uso' })
+  @ApiProperty({
+    required: false,
+    example: 2015,
+    description: 'Ano de conclusão do ensino médio',
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1950)
+  @Max(new Date().getFullYear())
+  highSchoolCompletionYear?: number;
+
+  @ApiProperty({ description: 'Aceite obrigatório dos termos de uso' })
   @IsBoolean()
-  @Equals(true, { message: 'E necessario aceitar os termos de uso' })
+  @Equals(true, { message: 'É necessario aceitar os termos de uso' })
   acceptedTerms: boolean;
 
   @ApiProperty({ required: false, default: false })

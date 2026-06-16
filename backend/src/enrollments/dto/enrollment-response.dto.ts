@@ -8,8 +8,8 @@ export class EnrollmentResponseDto {
   @ApiProperty()
   offerId: string;
 
-  @ApiProperty()
-  installmentId: string;
+  @ApiProperty({ nullable: true })
+  installmentId: string | null;
 
   @ApiProperty()
   fullName: string;
